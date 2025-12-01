@@ -1,0 +1,130 @@
+/* Tailwind directives removed to avoid unprocessed at-rules in editors/build tools.
+  This file uses CSS custom properties below and plain CSS equivalents instead of
+  Tailwind `@apply` utilities. If you prefer Tailwind processing, enable it in
+  your PostCSS pipeline and ensure this file is included. */
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 40 20% 96%;
+    --foreground: 30 15% 20%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 30 15% 20%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 30 15% 20%;
+
+    --primary: 42 47% 64%;
+    --primary-foreground: 30 15% 20%;
+
+    --secondary: 38 35% 88%;
+    --secondary-foreground: 30 15% 20%;
+
+    --muted: 40 15% 92%;
+    --muted-foreground: 30 10% 45%;
+
+    --accent: 42 47% 64%;
+    --accent-foreground: 30 15% 20%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 40 15% 88%;
+    --input: 40 15% 88%;
+    --ring: 42 47% 64%;
+
+    --radius: 0.75rem;
+
+    --gradient-hero: linear-gradient(135deg, hsl(42 47% 64%), hsl(45 60% 75%));
+    --gradient-subtle: linear-gradient(180deg, hsl(40 20% 98%), hsl(40 20% 96%));
+    
+    --shadow-soft: 0 4px 20px -4px hsl(42 47% 64% / 0.15);
+    --shadow-hover: 0 8px 30px -8px hsl(42 47% 64% / 0.25);
+    
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dark {
+    --background: 30 20% 12%;
+    --foreground: 40 20% 96%;
+
+    --card: 30 18% 15%;
+    --card-foreground: 40 20% 96%;
+
+    --popover: 30 18% 15%;
+    --popover-foreground: 40 20% 96%;
+
+    --primary: 42 47% 64%;
+    --primary-foreground: 30 15% 20%;
+
+    --secondary: 30 15% 22%;
+    --secondary-foreground: 40 20% 96%;
+
+    --muted: 30 15% 22%;
+    --muted-foreground: 40 15% 65%;
+
+    --accent: 42 47% 64%;
+    --accent-foreground: 30 15% 20%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 30 15% 22%;
+    --input: 30 15% 22%;
+    --ring: 42 47% 64%;
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: inherit;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: inherit;
+  }
+}
+
+@layer components {
+  .lumina-link {
+    position: relative;
+    display: inline-block;
+  }
+
+  .lumina-link::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    transform-origin: right bottom;
+    transform: scaleX(0);
+    height: 0.125rem; /* approx. Tailwind h-0.5 */
+    bottom: 0;
+    left: 0;
+    background-color: hsl(var(--primary));
+    transition: transform 0.3s;
+  }
+
+  .lumina-link:hover::after {
+    transform-origin: left bottom;
+    transform: scaleX(1);
+  }
+
+  .hover-lift {
+    transition: var(--transition-smooth);
+  }
+
+  .hover-lift:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-hover);
+  }
+}
