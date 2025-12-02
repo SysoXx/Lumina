@@ -22,9 +22,9 @@ const Hero = () => {
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button 
-            size="lg" 
-            className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-hover)] transition-all"
+          <Button
+            size="lg"
+            className="bg-amber-500 text-white hover:bg-amber-600 shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-hover)] transition-all"
           >
             Explorar Conteúdos
             <ArrowRight className="ml-2 w-4 h-4" />
