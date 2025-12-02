@@ -24,13 +24,13 @@ const Hero = () => {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button
             size="lg"
-            className="bg-amber-500 text-white hover:bg-amber-600 shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-hover)] transition-all"
+            className="bg-[#fef57e] text-black hover:bg-[#f0e86f] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-hover)] transition-all"
           >
             Explorar Conteúdos
             <ArrowRight className="ml-2 w-4 h-4" />
           </Button>
-          <Button 
-            size="lg" 
+          <Button
+            size="lg"
             variant="outline"
             className="border-primary/30 hover:bg-primary/10 transition-all"
           >
