@@ -102,7 +102,7 @@ const Quiz = () => {
                 <Button
                   onClick={handleNext}
                   disabled={!answers[currentQuestion]}
-                  className="w-full mt-6 bg-primary hover:bg-primary/90"
+                  className="w-full mt-6 bg-[#fef57e] text-black hover:bg-[#f0e86f]"
                 >
                   {currentQuestion < questions.length - 1 ? "Próxima" : "Ver Resultado"}
                 </Button>
