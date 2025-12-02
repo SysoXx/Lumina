@@ -121,7 +121,7 @@ const Quiz = () => {
                 <Button onClick={handleRestart} variant="outline">
                   Refazer Quiz
                 </Button>
-                <Button className="bg-primary hover:bg-primary/90">
+                <Button className="bg-amber-400 text-black hover:bg-amber-500">
                   Ver Recomendações
                 </Button>
               </div>
