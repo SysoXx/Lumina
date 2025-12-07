@@ -25,6 +25,7 @@ const Hero = () => {
           <Button
             size="lg"
             className="bg-yellow-100 text-black hover:bg-yellow-300 shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-hover)] transition-all"
+            onClick={() => document.getElementById('news')?.scrollIntoView({ behavior: 'smooth' })}
           >
             Explorar Conteúdos
             <ArrowRight className="ml-2 w-4 h-4" />
