@@ -124,16 +124,16 @@ const Forum = () => {
                     <Button variant="outline">Fechar</Button>
                   </DialogClose>
                   {isRegisterMode ? (
-                    <Button onClick={() => {
-                      const res = auth.register(authName, authEmail, authPassword);
+                    <Button onClick={async () => {
+                      const res = await auth.register(authName, authEmail, authPassword);
                       if (!res.success) alert(res.message || "Erro ao registrar");
                       else setAuthDialogOpen(false);
                     }}>
                       Registrar
                     </Button>
                   ) : (
-                    <Button onClick={() => {
-                      const res = auth.login(authEmail, authPassword);
+                    <Button onClick={async () => {
+                      const res = await auth.login(authEmail, authPassword);
                       if (!res.success) alert(res.message || "Falha no login");
                       else setAuthDialogOpen(false);
                     }}>
