@@ -230,7 +230,7 @@ const Forum = () => {
                     <Badge variant="secondary" className="bg-primary/10 text-primary">
                       {post.category}
                     </Badge>
-                    {auth.currentUser && auth.currentUser.name === post.author && (
+                    {auth.currentUser && (auth.currentUser.name === post.author || auth.currentUser.role === "admin") && (
                       <button
                         onClick={() => handleDelete(index)}
                         className="p-1 rounded text-destructive hover:bg-destructive/10"

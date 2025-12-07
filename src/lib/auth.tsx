@@ -6,6 +6,7 @@ type StoredUser = {
   email: string;
   salt: string; // base64
   hash: string; // base64
+  role?: "admin" | "user";
 };
 
 type AuthContextValue = {
@@ -66,6 +67,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUsers(parsed);
       const cur = localStorage.getItem(CURRENT_KEY);
       setCurrentUser(cur ? JSON.parse(cur) : null);
+
+      // If there are no users, create a seeded admin account for development
+      if (!parsed || parsed.length === 0) {
+        (async () => {
+          try {
+            const defaultName = "Admin";
+            const defaultEmail = "admin@local";
+            const defaultPassword = "admin123";
+            const salt = crypto.getRandomValues(new Uint8Array(SALT_BYTES));
+            const derived = await deriveKey(defaultPassword, salt.buffer);
+            const newUser: StoredUser = {
+              id: generateId(),
+              name: defaultName,
+              email: defaultEmail,
+              salt: arrayBufferToBase64(salt.buffer),
+              hash: arrayBufferToBase64(derived),
+              role: "admin",
+            };
+            setUsers([newUser]);
+            setCurrentUser(newUser);
+          } catch (e) {
+            console.error("Failed to create seeded admin user", e);
+          }
+        })();
+      }
     } catch (e) {
       console.error("Failed to load auth from localStorage", e);
     }
@@ -94,7 +120,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (exists) return { success: false, message: "E-mail já cadastrado" };
     const salt = crypto.getRandomValues(new Uint8Array(SALT_BYTES));
     const derived = await deriveKey(password, salt.buffer);
-    const newUser: StoredUser = { id: generateId(), name, email, salt: arrayBufferToBase64(salt.buffer), hash: arrayBufferToBase64(derived) };
+    const newUser: StoredUser = { id: generateId(), name, email, salt: arrayBufferToBase64(salt.buffer), hash: arrayBufferToBase64(derived), role: "user" };
     setUsers([newUser, ...users]);
     setCurrentUser(newUser);
     return { success: true };
