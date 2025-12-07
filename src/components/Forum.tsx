@@ -173,41 +173,11 @@ const Forum = () => {
           <>
             <Button
               className="bg-yellow-100 text-black hover:bg-yellow-300 shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-hover)] transition-all"
-              onClick={() => {
-                if (auth.currentUser) setDialogOpen(true);
-                else setAuthDialogOpen(true);
-              }}
+              onClick={() => setDialogOpen(true)}
             >
               <Plus className="w-4 h-4 mr-2" />
               Nova Publicação
             </Button>
-
-            <Dialog open={authDialogOpen} onOpenChange={setAuthDialogOpen}>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Entrar</DialogTitle>
-                  <DialogDescription>Faça login para publicar no fórum.</DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-2">
-                  <label className="text-sm">E-mail</label>
-                  <Input value={authEmail} onChange={(e) => setAuthEmail(e.target.value)} placeholder="email@exemplo.com" />
-                  <label className="text-sm">Senha</label>
-                  <Input type="password" value={authPassword} onChange={(e) => setAuthPassword(e.target.value)} placeholder="Senha" />
-                </div>
-                <DialogFooter>
-                  <DialogClose asChild>
-                    <Button variant="outline">Fechar</Button>
-                  </DialogClose>
-                  <Button onClick={async () => {
-                    const res = await auth.login(authEmail, authPassword);
-                    if (!res.success) alert(res.message || "Falha no login");
-                    else setAuthDialogOpen(false);
-                  }}>
-                    Entrar
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
 
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
               <DialogContent>
