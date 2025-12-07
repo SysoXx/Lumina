@@ -1,0 +1,12 @@
+{
+  "users": [
+    {
+      "id": "i7_aDV2CP1QvQZ-KPlDea",
+      "name": "Admin",
+      "email": "admin@local",
+      "passwordHash": "$2a$10$i3zbfSOSH.S7Uk1Svlmn5er./IVnIbzgYHQgl3fX60KZcb4Byor7.",
+      "role": "admin"
+    }
+  ],
+  "posts": []
+}

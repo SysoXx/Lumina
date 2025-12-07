@@ -76,7 +76,7 @@ const Chat = () => {
                 />
                 <Button 
                   onClick={handleSend}
-                  className="bg-primary hover:bg-primary/90"
+                  className="bg-yellow-100 text-black hover:bg-yellow-300 shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-hover)] transition-all"
                 >
                   <Send className="w-4 h-4" />
                 </Button>

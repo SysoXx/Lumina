@@ -6,7 +6,8 @@ import { MessageCircle, ThumbsUp, Plus, Trash } from "lucide-react";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { io, Socket } from "socket.io-client";
 import { useAuth } from "@/lib/auth";
 
 const Forum = () => {
@@ -61,6 +62,43 @@ const Forum = () => {
     }
   }, [posts]);
 
+  // socket for real-time updates
+  const socketRef = useRef<Socket | null>(null);
+  useEffect(() => {
+    try {
+      const socket = io("http://localhost:4000");
+      socketRef.current = socket;
+      socket.on("post_created", (p: any) => {
+        const mapped = {
+          id: p.id,
+          author: p.authorName,
+          avatar: (p.authorName || "").slice(0,2).toUpperCase(),
+          title: p.title,
+          excerpt: p.excerpt,
+          category: p.category,
+          likes: p.likes || 0,
+          comments: p.comments || 0,
+          time: new Date(p.time).toLocaleString(),
+        };
+        setPosts((prev) => {
+          // avoid duplicates
+          if (prev.some((x: any) => x.id && x.id === p.id)) return prev;
+          return [mapped as any, ...prev];
+        });
+      });
+      socket.on("post_deleted", ({ id }: any) => {
+        setPosts((prev) => prev.filter((post: any) => post.id !== id));
+      });
+      return () => {
+        socket.disconnect();
+        socketRef.current = null;
+      };
+    } catch (e) {
+      // ignore if socket cannot connect
+      console.error("Socket error", e);
+    }
+  }, []);
+
   const auth = useAuth();
 
   // auth dialog state
@@ -80,7 +118,8 @@ const Forum = () => {
     if (!newTitle.trim()) return;
     const authorName = auth.currentUser ? auth.currentUser.name : "Você";
     const avatar = auth.currentUser ? (auth.currentUser.name.slice(0,2).toUpperCase()) : newTitle.slice(0,2).toUpperCase();
-    const newPost = {
+    const localPost = {
+      id: `local-${Date.now()}`,
       author: authorName,
       avatar,
       title: newTitle,
@@ -90,7 +129,18 @@ const Forum = () => {
       comments: 0,
       time: "Agora"
     };
-    setPosts([newPost, ...posts]);
+    // optimistically add locally
+    setPosts((prev) => [localPost, ...prev]);
+
+    // emit to backend via socket (server will persist and broadcast)
+    try {
+      if (socketRef.current) {
+        socketRef.current.emit('create_post', { title: newTitle, excerpt: newExcerpt, category: newCategory, authorName });
+      }
+    } catch (e) {
+      console.error('Failed to emit create_post', e);
+    }
+
     setNewTitle("");
     setNewExcerpt("");
     setNewCategory("");
@@ -99,7 +149,17 @@ const Forum = () => {
 
   const handleDelete = (idx: number) => {
     if (!confirm("Excluir publicação? Esta ação não pode ser revertida.")) return;
-    setPosts(posts.filter((_, i) => i !== idx));
+    const post = posts[idx] as any;
+    // optimistically remove locally
+    setPosts((prev) => prev.filter((_, i) => i !== idx));
+    // if post has id, request server to delete via socket
+    try {
+      if (post && post.id && socketRef.current) {
+        socketRef.current.emit('delete_post', { id: post.id });
+      }
+    } catch (e) {
+      console.error('Failed to emit delete_post', e);
+    }
   };
 
   return (
@@ -112,7 +172,7 @@ const Forum = () => {
           </p>
           <>
             <Button
-              className="bg-[#fef57e] text-black hover:bg-[#f0e86f]"
+              className="bg-yellow-100 text-black hover:bg-yellow-300 shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-hover)] transition-all"
               onClick={() => {
                 if (auth.currentUser) setDialogOpen(true);
                 else setAuthDialogOpen(true);
@@ -125,18 +185,10 @@ const Forum = () => {
             <Dialog open={authDialogOpen} onOpenChange={setAuthDialogOpen}>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>{isRegisterMode ? "Registrar" : "Entrar"}</DialogTitle>
-                  <DialogDescription>
-                    {isRegisterMode ? "Crie uma conta para publicar no fórum." : "Faça login para publicar no fórum."}
-                  </DialogDescription>
+                  <DialogTitle>Entrar</DialogTitle>
+                  <DialogDescription>Faça login para publicar no fórum.</DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-2">
-                  {isRegisterMode && (
-                    <>
-                      <label className="text-sm">Nome</label>
-                      <Input value={authName} onChange={(e) => setAuthName(e.target.value)} placeholder="Seu nome" />
-                    </>
-                  )}
                   <label className="text-sm">E-mail</label>
                   <Input value={authEmail} onChange={(e) => setAuthEmail(e.target.value)} placeholder="email@exemplo.com" />
                   <label className="text-sm">Senha</label>
@@ -146,29 +198,14 @@ const Forum = () => {
                   <DialogClose asChild>
                     <Button variant="outline">Fechar</Button>
                   </DialogClose>
-                  {isRegisterMode ? (
-                    <Button onClick={async () => {
-                      const res = await auth.register(authName, authEmail, authPassword);
-                      if (!res.success) alert(res.message || "Erro ao registrar");
-                      else setAuthDialogOpen(false);
-                    }}>
-                      Registrar
-                    </Button>
-                  ) : (
-                    <Button onClick={async () => {
-                      const res = await auth.login(authEmail, authPassword);
-                      if (!res.success) alert(res.message || "Falha no login");
-                      else setAuthDialogOpen(false);
-                    }}>
-                      Entrar
-                    </Button>
-                  )}
+                  <Button onClick={async () => {
+                    const res = await auth.login(authEmail, authPassword);
+                    if (!res.success) alert(res.message || "Falha no login");
+                    else setAuthDialogOpen(false);
+                  }}>
+                    Entrar
+                  </Button>
                 </DialogFooter>
-                <div className="mt-2 text-center text-sm">
-                  <button className="underline" onClick={() => setIsRegisterMode(!isRegisterMode)}>
-                    {isRegisterMode ? "Já tem conta? Entrar" : "Não tem conta? Registrar"}
-                  </button>
-                </div>
               </DialogContent>
             </Dialog>
 

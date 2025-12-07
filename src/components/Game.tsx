@@ -95,9 +95,8 @@ const Game = () => {
                 corretamente nossa missão, visão ou valores!
               </CardDescription>
               <Button 
-                onClick={startGame} 
-                size="lg"
-                className="bg-primary hover:bg-primary/90"
+                onClick={startGame}
+                className="bg-yellow-100 text-black hover:bg-yellow-300 shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-hover)] transition-all"
               >
                 <Gamepad2 className="w-4 h-4 mr-2" />
                 Começar Jogo
