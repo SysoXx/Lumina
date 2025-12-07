@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, ThumbsUp, Plus } from "lucide-react";
+import { MessageCircle, ThumbsUp, Plus, Trash } from "lucide-react";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -95,6 +95,11 @@ const Forum = () => {
     setNewExcerpt("");
     setNewCategory("");
     if (close) close();
+  };
+
+  const handleDelete = (idx: number) => {
+    if (!confirm("Excluir publicação? Esta ação não pode ser revertida.")) return;
+    setPosts(posts.filter((_, i) => i !== idx));
   };
 
   return (
@@ -221,9 +226,20 @@ const Forum = () => {
                       </div>
                     </div>
                   </div>
-                  <Badge variant="secondary" className="bg-primary/10 text-primary">
-                    {post.category}
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="secondary" className="bg-primary/10 text-primary">
+                      {post.category}
+                    </Badge>
+                    {auth.currentUser && auth.currentUser.name === post.author && (
+                      <button
+                        onClick={() => handleDelete(index)}
+                        className="p-1 rounded text-destructive hover:bg-destructive/10"
+                        title="Excluir publicação"
+                      >
+                        <Trash className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
