@@ -33,6 +33,7 @@ const Hero = () => {
             size="lg" 
             variant="outline"
             className="border-primary/30 hover:bg-primary/10 transition-all"
+            onClick={() => document.getElementById('quiz')?.scrollIntoView({ behavior: 'smooth' })}
           >
             Fazer Quiz
           </Button>
