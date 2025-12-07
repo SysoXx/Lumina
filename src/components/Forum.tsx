@@ -6,11 +6,11 @@ import { MessageCircle, ThumbsUp, Plus } from "lucide-react";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth";
 
 const Forum = () => {
-  const [posts, setPosts] = useState([
+  const defaultPosts = [
     {
       author: "Maria Silva",
       avatar: "MS",
@@ -41,7 +41,25 @@ const Forum = () => {
       comments: 15,
       time: "1 dia atrás"
     }
-  ]);
+  ];
+
+  const [posts, setPosts] = useState(() => {
+    try {
+      const raw = localStorage.getItem("lumina_posts");
+      if (raw) return JSON.parse(raw);
+    } catch (e) {
+      // ignore and fallback to defaults
+    }
+    return defaultPosts;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("lumina_posts", JSON.stringify(posts));
+    } catch (e) {
+      // ignore storage errors
+    }
+  }, [posts]);
 
   const auth = useAuth();
 
@@ -146,6 +164,35 @@ const Forum = () => {
                     {isRegisterMode ? "Já tem conta? Entrar" : "Não tem conta? Registrar"}
                   </button>
                 </div>
+              </DialogContent>
+            </Dialog>
+
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Nova Publicação</DialogTitle>
+                  <DialogDescription>Crie uma nova publicação para compartilhar com a comunidade.</DialogDescription>
+                </DialogHeader>
+
+                <div className="grid gap-2">
+                  <label className="text-sm">Título</label>
+                  <Input value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="Título da publicação" />
+
+                  <label className="text-sm">Resumo / Conteúdo</label>
+                  <Textarea value={newExcerpt} onChange={(e) => setNewExcerpt(e.target.value)} placeholder="Escreva um resumo ou a publicação completa" />
+
+                  <label className="text-sm">Categoria</label>
+                  <Input value={newCategory} onChange={(e) => setNewCategory(e.target.value)} placeholder="Ex: Skincare, Nutrição, Bem-estar" />
+                </div>
+
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button variant="outline">Cancelar</Button>
+                  </DialogClose>
+                  <Button onClick={() => handleCreatePost(() => setDialogOpen(false))} disabled={!newTitle.trim()}>
+                    Publicar
+                  </Button>
+                </DialogFooter>
               </DialogContent>
             </Dialog>
           </>
