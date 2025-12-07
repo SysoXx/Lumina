@@ -7,6 +7,7 @@ import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, Dialog
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
+import { useAuth } from "@/lib/auth";
 
 const Forum = () => {
   const [posts, setPosts] = useState([
@@ -42,6 +43,15 @@ const Forum = () => {
     }
   ]);
 
+  const auth = useAuth();
+
+  // auth dialog state
+  const [authDialogOpen, setAuthDialogOpen] = useState(false);
+  const [isRegisterMode, setIsRegisterMode] = useState(false);
+  const [authName, setAuthName] = useState("");
+  const [authEmail, setAuthEmail] = useState("");
+  const [authPassword, setAuthPassword] = useState("");
+
   // form state for new post
   const [newTitle, setNewTitle] = useState("");
   const [newExcerpt, setNewExcerpt] = useState("");
@@ -50,9 +60,11 @@ const Forum = () => {
 
   const handleCreatePost = (close?: () => void) => {
     if (!newTitle.trim()) return;
+    const authorName = auth.currentUser ? auth.currentUser.name : "Você";
+    const avatar = auth.currentUser ? (auth.currentUser.name.slice(0,2).toUpperCase()) : newTitle.slice(0,2).toUpperCase();
     const newPost = {
-      author: "Você",
-      avatar: newTitle.slice(0,2).toUpperCase(),
+      author: authorName,
+      avatar,
       title: newTitle,
       excerpt: newExcerpt || "",
       category: newCategory || "Geral",
@@ -75,36 +87,68 @@ const Forum = () => {
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
             Conecte-se com outras pessoas, compartilhe experiências e aprenda
           </p>
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-[#fef57e] text-black hover:bg-[#f0e86f]">
-                <Plus className="w-4 h-4 mr-2" />
-                Nova Publicação
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Nova Publicação</DialogTitle>
-                <DialogDescription>Compartilhe algo com a comunidade.</DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-2">
-                <label className="text-sm">Título</label>
-                <Input value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="Título da publicação" />
-                <label className="text-sm">Categoria</label>
-                <Input value={newCategory} onChange={(e) => setNewCategory(e.target.value)} placeholder="Ex: Skincare, Bem-estar" />
-                <label className="text-sm">Resumo</label>
-                <Textarea value={newExcerpt} onChange={(e) => setNewExcerpt(e.target.value)} placeholder="Escreva um resumo ou conteúdo breve" />
-              </div>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button variant="outline">Cancelar</Button>
-                </DialogClose>
-                <Button onClick={() => { handleCreatePost(() => setDialogOpen(false)); setDialogOpen(false); }}>
-                  Publicar
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          <>
+            <Button
+              className="bg-[#fef57e] text-black hover:bg-[#f0e86f]"
+              onClick={() => {
+                if (auth.currentUser) setDialogOpen(true);
+                else setAuthDialogOpen(true);
+              }}
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Nova Publicação
+            </Button>
+
+            <Dialog open={authDialogOpen} onOpenChange={setAuthDialogOpen}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>{isRegisterMode ? "Registrar" : "Entrar"}</DialogTitle>
+                  <DialogDescription>
+                    {isRegisterMode ? "Crie uma conta para publicar no fórum." : "Faça login para publicar no fórum."}
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-2">
+                  {isRegisterMode && (
+                    <>
+                      <label className="text-sm">Nome</label>
+                      <Input value={authName} onChange={(e) => setAuthName(e.target.value)} placeholder="Seu nome" />
+                    </>
+                  )}
+                  <label className="text-sm">E-mail</label>
+                  <Input value={authEmail} onChange={(e) => setAuthEmail(e.target.value)} placeholder="email@exemplo.com" />
+                  <label className="text-sm">Senha</label>
+                  <Input type="password" value={authPassword} onChange={(e) => setAuthPassword(e.target.value)} placeholder="Senha" />
+                </div>
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button variant="outline">Fechar</Button>
+                  </DialogClose>
+                  {isRegisterMode ? (
+                    <Button onClick={() => {
+                      const res = auth.register(authName, authEmail, authPassword);
+                      if (!res.success) alert(res.message || "Erro ao registrar");
+                      else setAuthDialogOpen(false);
+                    }}>
+                      Registrar
+                    </Button>
+                  ) : (
+                    <Button onClick={() => {
+                      const res = auth.login(authEmail, authPassword);
+                      if (!res.success) alert(res.message || "Falha no login");
+                      else setAuthDialogOpen(false);
+                    }}>
+                      Entrar
+                    </Button>
+                  )}
+                </DialogFooter>
+                <div className="mt-2 text-center text-sm">
+                  <button className="underline" onClick={() => setIsRegisterMode(!isRegisterMode)}>
+                    {isRegisterMode ? "Já tem conta? Entrar" : "Não tem conta? Registrar"}
+                  </button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </>
         </div>
 
         <div className="max-w-4xl mx-auto space-y-6">
