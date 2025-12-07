@@ -3,9 +3,13 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MessageCircle, ThumbsUp, Plus } from "lucide-react";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useState } from "react";
 
 const Forum = () => {
-  const posts = [
+  const [posts, setPosts] = useState([
     {
       author: "Maria Silva",
       avatar: "MS",
@@ -36,7 +40,32 @@ const Forum = () => {
       comments: 15,
       time: "1 dia atrás"
     }
-  ];
+  ]);
+
+  // form state for new post
+  const [newTitle, setNewTitle] = useState("");
+  const [newExcerpt, setNewExcerpt] = useState("");
+  const [newCategory, setNewCategory] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const handleCreatePost = (close?: () => void) => {
+    if (!newTitle.trim()) return;
+    const newPost = {
+      author: "Você",
+      avatar: newTitle.slice(0,2).toUpperCase(),
+      title: newTitle,
+      excerpt: newExcerpt || "",
+      category: newCategory || "Geral",
+      likes: 0,
+      comments: 0,
+      time: "Agora"
+    };
+    setPosts([newPost, ...posts]);
+    setNewTitle("");
+    setNewExcerpt("");
+    setNewCategory("");
+    if (close) close();
+  };
 
   return (
     <section id="forum" className="py-20 px-4 bg-gradient-to-b from-secondary/20 to-background">
@@ -46,10 +75,36 @@ const Forum = () => {
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
             Conecte-se com outras pessoas, compartilhe experiências e aprenda
           </p>
-          <Button className="bg-[#fef57e] text-black hover:bg-[#f0e86f]">
-            <Plus className="w-4 h-4 mr-2" />
-            Nova Publicação
-          </Button>
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-[#fef57e] text-black hover:bg-[#f0e86f]">
+                <Plus className="w-4 h-4 mr-2" />
+                Nova Publicação
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Nova Publicação</DialogTitle>
+                <DialogDescription>Compartilhe algo com a comunidade.</DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-2">
+                <label className="text-sm">Título</label>
+                <Input value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="Título da publicação" />
+                <label className="text-sm">Categoria</label>
+                <Input value={newCategory} onChange={(e) => setNewCategory(e.target.value)} placeholder="Ex: Skincare, Bem-estar" />
+                <label className="text-sm">Resumo</label>
+                <Textarea value={newExcerpt} onChange={(e) => setNewExcerpt(e.target.value)} placeholder="Escreva um resumo ou conteúdo breve" />
+              </div>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="outline">Cancelar</Button>
+                </DialogClose>
+                <Button onClick={() => { handleCreatePost(() => setDialogOpen(false)); setDialogOpen(false); }}>
+                  Publicar
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
 
         <div className="max-w-4xl mx-auto space-y-6">
