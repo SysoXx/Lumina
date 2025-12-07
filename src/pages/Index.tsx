@@ -7,6 +7,7 @@ import Podcasts from "@/components/Podcasts";
 import Forum from "@/components/Forum";
 import Game from "@/components/Game";
 import Chat from "@/components/Chat";
+// import GeminiChat from "@/components/GeminiChat";
 import Footer from "@/components/Footer";
 
 const Index = () => {
@@ -21,6 +22,7 @@ const Index = () => {
       <Forum />
       <Game />
       <Chat />
+      {/* <GeminiChat /> */}
       <Footer />
     </div>
   );

@@ -10,6 +10,7 @@ const path = require('path');
 const http = require('http');
 const { Server: IOServer } = require('socket.io');
 
+
 const PORT = process.env.PORT || 4000;
 const JWT_SECRET = process.env.JWT_SECRET || 'change_this_secret_in_production';
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@local';
@@ -38,6 +39,10 @@ initDb();
 const app = express();
 app.use(cors({ origin: ["http://localhost:8080", "http://localhost:8081"], credentials: true }));
 app.use(express.json());
+
+// Rota IA
+const aiRouter = require('./ai');
+app.use('/api/ai', aiRouter);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

@@ -1,9 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { io } from "socket.io-client";
+import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send, MessageCircle } from "lucide-react";
+
+const socket = io("http://localhost:4000");
 
 const Chat = () => {
   const [messages, setMessages] = useState([
@@ -14,19 +18,23 @@ const Chat = () => {
   ]);
   const [inputValue, setInputValue] = useState("");
 
+  useEffect(() => {
+    const handleReceive = (msg) => {
+      setMessages(prev => [...prev, msg]);
+    };
+    socket.on("receive_message", handleReceive);
+    return () => {
+      socket.off("receive_message", handleReceive);
+    };
+  }, []);
+
   const handleSend = () => {
     if (!inputValue.trim()) return;
-
-    setMessages([...messages, { sender: "user", text: inputValue }]);
+    const userMsg = inputValue;
+    const msgObj = { sender: "user", text: userMsg };
+    setMessages([...messages, msgObj]);
+    socket.emit("send_message", msgObj);
     setInputValue("");
-
-    // Simular resposta automática
-    setTimeout(() => {
-      setMessages(prev => [...prev, {
-        sender: "bot",
-        text: "Obrigado pela sua mensagem! Nossa equipe entrará em contato em breve. Enquanto isso, explore nossos conteúdos sobre beleza e saúde!"
-      }]);
-    }, 1000);
   };
 
   return (
@@ -55,7 +63,7 @@ const Chat = () => {
                     <div
                       className={`max-w-[70%] rounded-lg p-3 ${
                         message.sender === "user"
-                          ? "bg-primary text-primary-foreground"
+                          ? "bg-yellow-100 text-black shadow-[var(--shadow-soft)]"
                           : "bg-secondary"
                       }`}
                     >

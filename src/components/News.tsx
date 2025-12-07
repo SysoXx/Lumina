@@ -61,7 +61,19 @@ const News = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground mb-4">{article.excerpt}</p>
-                <Button variant="link" className="text-primary p-0 h-auto">
+                <Button
+                  variant="link"
+                  className="text-primary p-0 h-auto"
+                  onClick={() => {
+                    if (article.title === "Os Benefícios da Meditação para a Pele") {
+                      window.open("https://blog.nutrify.com.br/meditacao-para-que-serve-beneficios?utm_source=google&utm_medium=cpc&utm_campaign=19859872963_145596736245&utm_content=687183806818&utm_term=&nemu_source=google&nemu_campaign=19859872963&nemu_adset=145596736245&nemu_content=687183806818&nemu_term=&gad_source=1&gad_campaignid=19859872963&gbraid=0AAAAADKtjArlam_kMMfC0IKv5GP31wrJL&gclid=Cj0KCQiA6NTJBhDEARIsAB7QHD30u4E2KC4EhDUySiWW9Ub9wYslcIccXi3JJlc_b1r67Th-EKZr--IaAlE-EALw_wcB", "_blank");
+                    } else if (article.title === "Tendências de Skincare para 2024") {
+                      window.open("https://gshow.globo.com/comportamento/beleza/noticia/skincare-em-2025-6-tendencias-que-vao-revolucionar-os-cuidados-com-a-pele.ghtml", "_blank");
+                    } else if (article.title === "Alimentação e Beleza: A Conexão") {
+                      window.open("https://www.profuse.com.br/blog-profuse/beleza-interior-descubra-como-alimentacao-pode-transformar-sua-aparencia/#:~:text=Com%20a%20rotina%20acelerada%2C%20esquecemos%20de%20valorizar,rela%C3%A7%C3%A3o%20entre%20nutri%C3%A7%C3%A3o%20e%20beleza%20vai%20muito", "_blank");
+                    }
+                  }}
+                >
                   Ler mais <ArrowRight className="ml-1 w-4 h-4" />
                 </Button>
               </CardContent>
@@ -70,7 +82,11 @@ const News = () => {
         </div>
 
         <div className="text-center">
-          <Button variant="outline" className="border-primary/30 hover:bg-primary/10">
+          <Button
+            variant="outline"
+            className="border-primary/30 hover:bg-primary/10"
+            onClick={() => window.open('https://esteticaemercado.com.br/', '_blank')}
+          >
             Ver Todas as Notícias
           </Button>
         </div>
