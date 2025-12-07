@@ -46,7 +46,7 @@ const Forum = () => {
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
             Conecte-se com outras pessoas, compartilhe experiências e aprenda
           </p>
-          <Button className="bg-primary hover:bg-primary/90">
+          <Button className="bg-[#fef57e] text-black hover:bg-[#f0e86f]">
             <Plus className="w-4 h-4 mr-2" />
             Nova Publicação
           </Button>
