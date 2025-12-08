@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send, MessageCircle } from "lucide-react";
 
-const socket = io("http://localhost:4000");
+const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+const socket = io(backendUrl);
 
 const Chat = () => {
   const [messages, setMessages] = useState([
